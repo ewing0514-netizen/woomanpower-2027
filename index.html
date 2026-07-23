@@ -170,10 +170,15 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
   .jcopy h2{padding-left:0;letter-spacing:.18em;font-size:clamp(38px,4.5vw,56px);}
   .jcopy p{text-align:left;padding:16px 0 0;}
 }
-/* 手機：場景上移，讓出下方文案空間 */
+/* 手機：STAGE 文案移到畫面上方，場景下移 */
 @media (max-width:768px){
-  .jscene{align-items:flex-start;padding-top:9vh;}
+  .jscene{align-items:flex-end;padding-bottom:12vh;}
   .jscene svg{width:82vw;}
+  .jcopy{bottom:auto;top:max(8vh,62px);width:min(620px,86vw);}
+  .jcopy .no{margin-bottom:8px;}
+  .jcopy h2{margin-bottom:10px;}
+  /* 文案移上方後，遮罩改成上重下輕，維持可讀性 */
+  .jveil{background:linear-gradient(180deg,rgba(21,17,13,.66) 0%,rgba(21,17,13,.34) 26%,rgba(21,17,13,0) 55%,rgba(21,17,13,.34) 100%)!important;}
 }
 
 
@@ -219,7 +224,7 @@ div[style*="background-color:rgba(251,243,230,.06)"]{background-color:rgba(255,2
 <div class="journey" id="journey">
   <div class="jstage">
     <div id="jmedia" style="position:absolute;inset:0;"></div>
-    <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(21,17,13,.32) 0%,rgba(21,17,13,0) 30%,rgba(21,17,13,0) 70%,rgba(21,17,13,.4) 100%);"></div>
+    <div class="jveil" style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(21,17,13,.32) 0%,rgba(21,17,13,0) 30%,rgba(21,17,13,0) 70%,rgba(21,17,13,.4) 100%);"></div>
     <canvas class="jparticles" id="jpcv"></canvas>
     <div class="jintro" id="jintro">
       <div class="kicker">姐帶妳飛 2027</div>
@@ -284,7 +289,7 @@ const dots=STAGES.map((s,i)=>{const row=document.createElement('div');row.classN
  row.innerHTML='<span class="jlbl">'+s.name+'</span><span class="jdot"></span>';
  row.onclick=()=>{const range=journey.offsetHeight-innerHeight;const t=(restStart(i)+REST*0.5)/TOTAL;window.scrollTo({top:journey.offsetTop+t*range,behavior:'smooth'});};
  rail.appendChild(row);return row;});
-(function(){var cta=document.createElement("div");cta.style.cssText="margin-top:14px;pointer-events:auto;cursor:pointer;text-align:right;";cta.innerHTML='<span style="display:inline-block;border:1px solid '+"rgba(217,181,102,.6)"+';color:#F0D9A8;font-size:11.5px;font-weight:700;letter-spacing:.12em;padding:6px 12px;border-radius:999px;background:rgba(21,17,13,.45);white-space:nowrap;">2027 年度招生</span>';cta.onclick=function(){var hero=document.querySelector(".hero-kv");if(hero){window.scrollTo({top:journey.offsetTop+journey.offsetHeight,behavior:"smooth"});}};rail.appendChild(cta);})();
+(function(){var cta=document.createElement("div");cta.style.cssText="margin-top:14px;pointer-events:auto;cursor:pointer;text-align:right;";cta.innerHTML='<span style="display:inline-block;border:1px solid '+"rgba(217,181,102,.6)"+';color:#F0D9A8;font-size:11.5px;font-weight:700;letter-spacing:.12em;padding:6px 12px;border-radius:999px;background:rgba(21,17,13,.45);white-space:nowrap;">探索課程</span>';cta.onclick=function(){var hero=document.querySelector(".hero-kv");if(hero){window.scrollTo({top:journey.offsetTop+journey.offsetHeight,behavior:"smooth"});}};rail.appendChild(cta);})();
 const intro=document.getElementById('jintro'),finale=document.getElementById('jfinale'),copy=document.getElementById('jcopy');
 const cNo=document.getElementById('jc-no'),cTitle=document.getElementById('jc-title'),cDesc=document.getElementById('jc-desc');
 document.getElementById('jgo').onclick=()=>{window.scrollTo({top:journey.offsetTop+journey.offsetHeight,behavior:'smooth'});};

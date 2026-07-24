@@ -185,10 +185,10 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
   .jcopy{bottom:auto;top:calc(max(13vh,96px) + env(safe-area-inset-top,0px));width:min(620px,86vw);}
   .jcopy .no{margin-bottom:8px;}
   .jcopy h2{margin-bottom:10px;}
-  /* STAGE 05 文案改放畫面下方 */
-  .jcopy.s5{top:auto;bottom:max(13vh,92px);}
-  /* STAGE 06 文案再往上 8% */
-  .jcopy.s6{top:calc(max(13vh,96px) + env(safe-area-inset-top,0px) - 8vh);}
+  /* 各 STAGE 文案垂直微調（STAGE 02、05 維持預設上方位置）*/
+  .jcopy.s1{top:calc(max(13vh,96px) + env(safe-area-inset-top,0px) - 8vh);}
+  .jcopy.s3,.jcopy.s4{top:calc(max(13vh,96px) + env(safe-area-inset-top,0px) - 5vh);}
+  .jcopy.s6{top:max(26px,calc(max(13vh,96px) + env(safe-area-inset-top,0px) - 11vh));}
   /* 文案移上方後，遮罩改成上重下輕，維持可讀性 */
   .jveil{background:linear-gradient(180deg,rgba(21,17,13,.66) 0%,rgba(21,17,13,.34) 26%,rgba(21,17,13,0) 55%,rgba(21,17,13,.34) 100%)!important;}
   /* 結尾頁：文字避開右側階段圓點 */
@@ -196,6 +196,8 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
   .jfinale h2,.jfinale .chain{max-width:78vw;margin-left:auto;margin-right:auto;}
   .jfinale .chain{line-height:2;}
   .jfinale .go{padding:15px 26px;font-size:15px;}
+  /* HERO 頂部標語：手機字距縮短 5% */
+  .hero-top .kicker{letter-spacing:.5225em;}
   /* 為什麼是年度計畫：左右留白縮小、下方多留 7% 底色 */
   .whyblk{padding:48px 22px calc(48px + 7vh)!important;}
   /* 年度成長地圖：色塊往下、文字下移後再上移 7%、底圖延伸到文案下方 */
@@ -254,6 +256,11 @@ div[style*="background-color:rgba(251,243,230,.06)"]{background-color:rgba(255,2
 /* 月份主題白色漸層流動 */
 @keyframes mtShine{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
 .mt-shine{background:linear-gradient(120deg,#e8ddcc 0%,#ffffff 22%,#fbf3e6 45%,#ffffff 70%,#e8ddcc 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:mtShine 5s linear infinite;}
+
+/* 進入銷售頁：光線變亮過場 */
+#lightveil{position:fixed;inset:0;z-index:95;pointer-events:none;opacity:0;will-change:opacity;
+  background:radial-gradient(130% 85% at 50% 52%,#fffaf0 0%,#ffeed6 28%,rgba(255,228,192,.55) 56%,rgba(255,214,170,0) 84%);
+  mix-blend-mode:screen;transition:opacity .22s linear;}
 </style>
 </head>
 <body>
@@ -264,9 +271,9 @@ div[style*="background-color:rgba(251,243,230,.06)"]{background-color:rgba(255,2
     <div class="jveil" style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(21,17,13,.32) 0%,rgba(21,17,13,0) 30%,rgba(21,17,13,0) 70%,rgba(21,17,13,.4) 100%);"></div>
     <canvas class="jparticles" id="jpcv"></canvas>
     <div class="jintro" id="jintro">
-      <div class="kicker">姐帶妳飛 2027</div>
+      <div class="kicker">2027 姐帶妳飛</div>
       <h1>妳的成長旅程</h1>
-      <div class="sub">6 個階段，成就更好的自己</div>
+      <div class="sub">六個階段，成就更好的自己</div>
       <div class="hint">▼ 往下捲動，開始飛 ▼</div>
     </div>
     <div class="jcopy" id="jcopy">
@@ -326,10 +333,21 @@ const dots=STAGES.map((s,i)=>{const row=document.createElement('div');row.classN
  row.innerHTML='<span class="jlbl">'+s.name+'</span><span class="jdot"></span>';
  row.onclick=()=>{const range=journey.offsetHeight-innerHeight;const t=(restStart(i)+REST*0.5)/TOTAL;window.scrollTo({top:journey.offsetTop+t*range,behavior:'smooth'});};
  rail.appendChild(row);return row;});
-(function(){var cta=document.createElement("div");cta.style.cssText="margin-top:14px;pointer-events:auto;cursor:pointer;text-align:right;";cta.innerHTML='<span style="display:inline-block;border:1px solid '+"rgba(217,181,102,.6)"+';color:#F0D9A8;font-size:11.5px;font-weight:700;letter-spacing:.12em;padding:6px 12px;border-radius:999px;background:rgba(21,17,13,.45);white-space:nowrap;">探索課程</span>';cta.onclick=function(){var hero=document.querySelector(".hero-kv");if(hero){window.scrollTo({top:journey.offsetTop+journey.offsetHeight,behavior:"smooth"});}};rail.appendChild(cta);})();
+(function(){var cta=document.createElement("div");cta.style.cssText="margin-top:14px;pointer-events:auto;cursor:pointer;text-align:right;";cta.innerHTML='<span style="display:inline-block;border:1px solid '+"rgba(217,181,102,.6)"+';color:#F0D9A8;font-size:11.5px;font-weight:700;letter-spacing:.12em;padding:6px 12px;border-radius:999px;background:rgba(21,17,13,.45);white-space:nowrap;">探索課程</span>';cta.onclick=function(){var to=journey.offsetTop+journey.offsetHeight;if(window.__lightWipe){window.__lightWipe(to);}else{window.scrollTo({top:to,behavior:"smooth"});}};rail.appendChild(cta);})();
 const intro=document.getElementById('jintro'),finale=document.getElementById('jfinale'),copy=document.getElementById('jcopy');
 const cNo=document.getElementById('jc-no'),cTitle=document.getElementById('jc-title'),cDesc=document.getElementById('jc-desc');
-document.getElementById('jgo').onclick=()=>{window.scrollTo({top:journey.offsetTop+journey.offsetHeight,behavior:'smooth'});};
+/* ---- 進入銷售頁的光線過場 ---- */
+const lv=document.createElement('div');lv.id='lightveil';document.body.appendChild(lv);
+let wiping=false;
+function lightWipe(to){
+  if(wiping)return;wiping=true;
+  lv.style.transition='opacity .36s ease-in';lv.style.opacity='1';
+  setTimeout(function(){window.scrollTo({top:to,behavior:'auto'});},370);
+  setTimeout(function(){lv.style.transition='opacity .8s ease-out';lv.style.opacity='0';},540);
+  setTimeout(function(){lv.style.transition='';wiping=false;},1500);
+}
+window.__lightWipe=lightWipe;
+document.getElementById('jgo').onclick=()=>{lightWipe(journey.offsetTop+journey.offsetHeight);};
 let cur=-1, seekTargets=vids.map(()=>-1);
 
 function setCopy(i){if(i!==cur){cur=i;if(i>=0){cNo.textContent=STAGES[i].no;cTitle.textContent=STAGES[i].name;cDesc.innerHTML=STAGES[i].desc;copy.className="jcopy s"+(i+1);}}copy.style.opacity=i>=0?1:0;}
@@ -371,6 +389,15 @@ function render(){
   vids.forEach((v,i)=>v.style.opacity=vo[i]);
   setCopy(copyIdx);
   dots.forEach((d,i)=>d.classList.toggle('on',p>restStart(i)+REST*0.3));
+
+  // 捲出旅程 → 進入銷售頁：光線變亮再散去
+  if(!wiping){
+    const rb=journey.getBoundingClientRect().bottom;
+    const d=innerHeight-rb;
+    let g=0;
+    if(d>0){const u=d/innerHeight;g=u<0.3?(u/0.3):clamp(1-((u-0.3)/0.5),0,1);}
+    lv.style.opacity=(clamp(g,0,1)*0.7).toFixed(3);
+  }
 }
 
 // rAF 驅動 seek，避免每次 scroll 都硬設 currentTime
@@ -474,12 +501,12 @@ render();
     <h2 style="text-align:center;">歷屆女性學員分享</h2>
 
     <div style="display:flex;flex-wrap:wrap;gap:18px;margin-top:44px;justify-content:center;">
-      <div class="tcard" style="flex:0 1 calc(50% - 9px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">以前我很會上課，卻不太會改變。每次課後筆記記得滿滿的，回到生活還是老樣子。這一年最不一樣的是「每週一個小任務」——不用一次做很大，但每週都往前一點點。年底回頭看，我竟然真的把想做很久的事做成了。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; Vivian｜行銷企劃</p></div>
-      <div class="tcard" style="flex:0 1 calc(50% - 9px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">我是那種很容易三分鐘熱度的人，一個人很難撐。是這個社群把我接住了——每週直播固定要上、群組裡姐妹互相打氣，我第一次把一件事堅持了整整一年。現在我對自己的信任，跟一年前完全不同。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; 怡君｜中小企業主</p></div>
-      <div class="tcard" style="flex:0 1 calc(50% - 9px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">35 歲後我一度覺得職涯卡住了，不知道下一步在哪。跟著一整年的六階段走下來，從看世界、理解自己到財商跟收入，我慢慢拼出自己真正想要的方向。今年我談成了轉職，薪水也往上跳了一階。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; Amanda｜外商專案經理</p></div>
-      <div class="tcard" style="flex:0 1 calc(50% - 9px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">我一直覺得「理財」離我很遠，總想著等有錢再說。財商那兩個月上完，我第一次把自己的收支攤開來看，也真的開了投資帳戶。金額不大，但那種「我終於在為未來做事」的踏實感，比賺多少更重要。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; 佩璇｜護理師</p></div>
-      <div class="tcard" style="flex:0 1 calc(50% - 9px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">當媽媽之後，我幾乎沒有屬於自己的時間。每週那一堂直播，變成我一個禮拜最期待的九十分鐘——不是媽媽、不是太太，就是我自己。一年下來，我沒有變成別人，我只是把自己找回來了。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; 宜庭｜全職媽媽</p></div>
-      <div class="tcard" style="flex:0 1 calc(50% - 9px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">我原本只是想學表達，沒想到最大的收穫是「敢被看見」。年末總復盤時我站上台分享，那是我人生第一次主動舉手。現在我在公司開會敢提案了，也接了幾場對外的分享。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; Kelly｜科技業 PM</p></div>
+      <div class="tcard" style="flex:0 1 calc(33.333% - 12px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">以前我很會上課，卻不太會改變。每次課後筆記記得滿滿的，回到生活還是老樣子。這一年最不一樣的是「每週一個小任務」——不用一次做很大，但每週都往前一點點。年底回頭看，我竟然真的把想做很久的事做成了。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; Vivian｜行銷企劃</p></div>
+      <div class="tcard" style="flex:0 1 calc(33.333% - 12px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">我是那種很容易三分鐘熱度的人，一個人很難撐。是這個社群把我接住了——每週直播固定要上、群組裡姐妹互相打氣，我第一次把一件事堅持了整整一年。現在我對自己的信任，跟一年前完全不同。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; 怡君｜中小企業主</p></div>
+      <div class="tcard" style="flex:0 1 calc(33.333% - 12px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">35 歲後我一度覺得職涯卡住了，不知道下一步在哪。跟著一整年的六階段走下來，從看世界、理解自己到財商跟收入，我慢慢拼出自己真正想要的方向。今年我談成了轉職，薪水也往上跳了一階。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; Amanda｜外商專案經理</p></div>
+      <div class="tcard" style="flex:0 1 calc(33.333% - 12px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">我一直覺得「理財」離我很遠，總想著等有錢再說。財商那兩個月上完，我第一次把自己的收支攤開來看，也真的開了投資帳戶。金額不大，但那種「我終於在為未來做事」的踏實感，比賺多少更重要。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; 佩璇｜護理師</p></div>
+      <div class="tcard" style="flex:0 1 calc(33.333% - 12px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">當媽媽之後，我幾乎沒有屬於自己的時間。每週那一堂直播，變成我一個禮拜最期待的九十分鐘——不是媽媽、不是太太，就是我自己。一年下來，我沒有變成別人，我只是把自己找回來了。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; 宜庭｜全職媽媽</p></div>
+      <div class="tcard" style="flex:0 1 calc(33.333% - 12px);max-width:none;min-width:260px;box-sizing:border-box;background:#faf3e8;border-radius:20px;padding:26px 24px;text-align:left;"><p style="font-size:15px;line-height:1.9;color:#3a2c22;margin:0 0 16px;">我原本只是想學表達，沒想到最大的收穫是「敢被看見」。年末總復盤時我站上台分享，那是我人生第一次主動舉手。現在我在公司開會敢提案了，也接了幾場對外的分享。</p><p style="font-size:14px;font-weight:700;color:#7a5540;margin:0;">&mdash;&mdash; Kelly｜科技業 PM</p></div>
     </div>
     <p style="font-size:12.5px;color:rgba(242,234,221,.4);margin-top:20px;">＊以上為歷屆學員回饋，姓名經當事人同意使用</p>
   </div>

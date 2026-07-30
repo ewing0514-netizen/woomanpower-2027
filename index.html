@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-07-30-r35 -->
+<!-- build: 2026-07-30-r36 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -230,12 +230,18 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
   .lcard.flip .lback .btitle{font-size:11.5px!important;margin-bottom:9px!important;}
   .lcard.flip .lback .bio{font-size:12px!important;line-height:1.75!important;padding-right:26px!important;}
   .lcard div[style*="padding:16px"]{padding:12px!important;}
-  /* S校長橫幅：手機改為圖在上、文在下 */
-  .sbanner{min-height:0!important;}
-  .sbimg{height:56vw!important;max-height:340px!important;object-position:center 12%!important;}
-  .sbveil{background:linear-gradient(180deg,rgba(26,18,22,.15) 0%,rgba(26,18,22,.55) 42%,#1A1216 72%,#1A1216 100%)!important;}
-  .sbwrap{padding:calc(56vw - 40px) 20px 44px!important;}
-  .sblist{grid-template-columns:1fr!important;gap:9px!important;}
+  /* S校長橫幅：手機改為「圖在上、文在下」的正常流排版 */
+  .sbanner{min-height:0!important;background-color:#1A1216;}
+  .sbimg{position:relative!important;display:block!important;width:100%!important;height:78vw!important;max-height:400px!important;object-position:right 6%!important;z-index:0!important;}
+  .sbveil{top:auto!important;bottom:auto!important;left:0!important;right:0!important;height:78vw!important;max-height:400px!important;
+    background:linear-gradient(180deg,rgba(26,18,22,0) 46%,rgba(26,18,22,.5) 74%,rgba(26,18,22,.92) 92%,#1A1216 100%)!important;}
+  .sbwrap{padding:22px 20px 46px!important;max-width:none!important;}
+  .sbcopy{max-width:none!important;}
+  .sblist{grid-template-columns:1fr!important;gap:0!important;}
+  .sblist>div{gap:12px!important;padding:11px 0!important;border-bottom:1px solid rgba(217,181,102,.16);}
+  .sblist>div:last-child{border-bottom:none;}
+  .sblist>div>span:first-child{min-width:58px!important;font-size:12px!important;padding:4px 8px!important;}
+  .sblist>div>span:last-child{font-size:14.5px!important;line-height:1.5;}
   /* 學員見證：兩張一排 */
   .tgrid{gap:10px!important;margin-top:30px!important;}
   .tcard{flex:0 0 100%!important;max-width:100%!important;min-width:0!important;padding:22px 20px!important;border-radius:16px!important;}

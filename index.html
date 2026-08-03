@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-03-r57 -->
+<!-- build: 2026-08-03-r58 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -468,10 +468,17 @@ function setCopy(i){if(i!==cur){cur=i;if(i>=0){cNo.textContent=STAGES[i].no;cTit
 
 const lastIo=new Array(6).fill(-1),lastVo=new Array(5).fill(-1),lastDot=new Array(6).fill(null);
 let lastLv=-1, jVisible=true;
-function render(){
+// 捲動只更新「目標值」，實際進度用緩動追上去 → 手指放開後會自然減速停下
+let targetP=0, curP=0, settle=true;
+const EASE = (innerWidth<768 ? 0.18 : 0.15);
+function readTarget(){
   const range=journey.offsetHeight-innerHeight;
+  if(range<=0)return 0;
   const y=clamp(-journey.getBoundingClientRect().top,0,range);
-  const p=(y/range)*TOTAL;
+  return (y/range)*TOTAL;
+}
+function render(){
+  const p=curP;
   intro.style.opacity=clamp(1-(p/INTRO)*1.4,0,1);
   intro.style.pointerEvents=p<INTRO*0.7?'auto':'none';
   const fin=clamp((p-(TOTAL-FINALE))/ (FINALE*0.6),0,1);
@@ -523,6 +530,10 @@ function render(){
 // rAF 驅動 seek，避免每次 scroll 都硬設 currentTime
 (function seekLoop(){
   if(jVisible){
+    // 緩動追隨：每幀往目標靠近一段比例，產生自然的漸慢收尾
+    const d=targetP-curP;
+    if(Math.abs(d)>0.0006){curP+=d*EASE;render();}
+    else if(settle){curP=targetP;render();settle=false;}
     for(let i=0;i<vids.length;i++){
       const t=seekTargets[i];
       if(t<0||!vready[i])continue;
@@ -535,9 +546,8 @@ function render(){
   requestAnimationFrame(seekLoop);
 })();
 
-let tk=false;
-addEventListener('scroll',()=>{if(!tk){requestAnimationFrame(()=>{render();tk=false;});tk=true;}},{passive:true});
-addEventListener('resize',render);
+addEventListener('scroll',()=>{targetP=readTarget();settle=true;},{passive:true});
+addEventListener('resize',()=>{targetP=readTarget();curP=targetP;settle=true;render();});
 
 // 金塵＋花瓣
 const cv=document.getElementById('jpcv'),ctx=cv.getContext('2d');let P=[];
@@ -557,11 +567,15 @@ ctx.globalAlpha=1;requestAnimationFrame(loop);})();
 
 // 旅程捲出畫面後，停掉 seek 與粒子運算，銷售頁滑動就不會被開場拖累
 if('IntersectionObserver' in window){
-  new IntersectionObserver(function(es){jVisible=es[0].isIntersecting;},{threshold:0}).observe(journey);
+  new IntersectionObserver(function(es){
+    jVisible=es[0].isIntersecting;
+    if(jVisible){targetP=readTarget();settle=true;}
+    else if(lastLv!==0){lastLv=0;lv.style.opacity=0;lv.style.visibility='hidden';}
+  },{threshold:0}).observe(journey);
 }
 
 if(matchMedia('(prefers-reduced-motion: reduce)').matches){journey.style.height='100vh';}
-render();
+targetP=readTarget();curP=targetP;render();
 })();
 </script>
 <!-- ===== 成長旅程開場結束，以下為銷售頁 ===== -->

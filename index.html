@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-03-r56 -->
+<!-- build: 2026-08-03-r57 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -400,7 +400,7 @@ const STAGES=[
 ];
 const journey=document.getElementById('journey');
 const mediaRoot=document.getElementById('jmedia');
-const MSTYLE='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;will-change:opacity;';
+const MSTYLE='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;visibility:hidden;will-change:opacity;transform:translateZ(0);backface-visibility:hidden;';
 const imgs=IMGS.map((u,i)=>{const im=document.createElement('img');im.style.cssText=MSTYLE;im.decoding='async';try{im.fetchPriority=(i===0?'high':'low');}catch(e){}im.src=u;mediaRoot.appendChild(im);return im;});
 const vids=VIDS.map(u=>{const v=document.createElement('video');v.muted=true;v.playsInline=true;v.setAttribute('playsinline','');v.preload='metadata';v.crossOrigin='anonymous';v.style.cssText=MSTYLE;v.dataset.src=u;mediaRoot.appendChild(v);return v;});
 const vready=vids.map(()=>false);
@@ -466,6 +466,8 @@ let cur=-1, seekTargets=vids.map(()=>-1);
 
 function setCopy(i){if(i!==cur){cur=i;if(i>=0){cNo.textContent=STAGES[i].no;cTitle.textContent=STAGES[i].name;cDesc.innerHTML=STAGES[i].desc;copy.className="jcopy s"+(i+1);}}copy.style.opacity=i>=0?1:0;}
 
+const lastIo=new Array(6).fill(-1),lastVo=new Array(5).fill(-1),lastDot=new Array(6).fill(null);
+let lastLv=-1, jVisible=true;
 function render(){
   const range=journey.offsetHeight-innerHeight;
   const y=clamp(-journey.getBoundingClientRect().top,0,range);
@@ -499,10 +501,13 @@ function render(){
       }
     }
   }
-  imgs.forEach((im,i)=>im.style.opacity=io[i]);
-  vids.forEach((v,i)=>v.style.opacity=vo[i]);
+  for(let i=0;i<imgs.length;i++){const o=io[i];if(o!==lastIo[i]){lastIo[i]=o;const im=imgs[i];
+    im.style.opacity=o;im.style.visibility=(o<=0.002?'hidden':'visible');}}
+  for(let i=0;i<vids.length;i++){const o=vo[i];if(o!==lastVo[i]){lastVo[i]=o;const v=vids[i];
+    v.style.opacity=o;v.style.visibility=(o<=0.002?'hidden':'visible');}}
   setCopy(copyIdx);
-  dots.forEach((d,i)=>d.classList.toggle('on',p>restStart(i)+REST*0.3));
+  for(let i=0;i<dots.length;i++){const on=p>restStart(i)+REST*0.3;
+    if(on!==lastDot[i]){lastDot[i]=on;dots[i].classList.toggle('on',on);}}
 
   // 捲出旅程 → 進入銷售頁：光線變亮再散去
   if(!wiping){
@@ -510,18 +515,23 @@ function render(){
     const d=innerHeight-rb;
     let g=0;
     if(d>0){const u=d/innerHeight;g=u<0.3?(u/0.3):clamp(1-((u-0.3)/0.5),0,1);}
-    lv.style.opacity=(clamp(g,0,1)*1).toFixed(3);
+    const gv=+(clamp(g,0,1)).toFixed(3);
+    if(gv!==lastLv){lastLv=gv;lv.style.opacity=gv;lv.style.visibility=(gv<=0.002?'hidden':'visible');}
   }
 }
 
 // rAF 驅動 seek，避免每次 scroll 都硬設 currentTime
 (function seekLoop(){
-  vids.forEach((v,i)=>{
-    const t=seekTargets[i];
-    if(t>=0&&vready[i]&&Math.abs(v.currentTime-t)>0.034){
-      try{v.currentTime=t;}catch(e){}
+  if(jVisible){
+    for(let i=0;i<vids.length;i++){
+      const t=seekTargets[i];
+      if(t<0||!vready[i])continue;
+      const v=vids[i];
+      if(v.style.visibility==='hidden')continue;
+      if(v.seeking)continue;
+      if(Math.abs(v.currentTime-t)>0.034){try{v.currentTime=t;}catch(e){}}
     }
-  });
+  }
   requestAnimationFrame(seekLoop);
 })();
 
@@ -534,7 +544,8 @@ const cv=document.getElementById('jpcv'),ctx=cv.getContext('2d');let P=[];
 function rs2(){cv.width=cv.parentElement.clientWidth;cv.height=cv.parentElement.clientHeight;
 P=Array.from({length:innerWidth<768?20:36},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*1.8+.4,s:Math.random()*.35+.08,a:Math.random()*.45+.12}));}
 rs2();addEventListener('resize',rs2);
-(function loop(){ctx.clearRect(0,0,cv.width,cv.height);
+(function loop(){if(!jVisible){requestAnimationFrame(loop);return;}
+ctx.clearRect(0,0,cv.width,cv.height);
 P.forEach((pt,idx)=>{const petal=idx%2===0;
  if(petal){pt.y+=pt.s*0.8;pt.x+=Math.sin(pt.y*0.02)*0.4;if(pt.y>cv.height+6){pt.y=-6;pt.x=Math.random()*cv.width;}}
  else{pt.y-=pt.s;if(pt.y<-4){pt.y=cv.height+4;pt.x=Math.random()*cv.width;}}
@@ -543,6 +554,11 @@ P.forEach((pt,idx)=>{const petal=idx%2===0;
  if(petal){ctx.ellipse(pt.x,pt.y,pt.r*2.1,pt.r*1.1,Math.sin(pt.y*0.02)*1.2,0,7);}else{ctx.arc(pt.x,pt.y,pt.r,0,7);}
  ctx.fill();});
 ctx.globalAlpha=1;requestAnimationFrame(loop);})();
+
+// 旅程捲出畫面後，停掉 seek 與粒子運算，銷售頁滑動就不會被開場拖累
+if('IntersectionObserver' in window){
+  new IntersectionObserver(function(es){jVisible=es[0].isIntersecting;},{threshold:0}).observe(journey);
+}
 
 if(matchMedia('(prefers-reduced-motion: reduce)').matches){journey.style.height='100vh';}
 render();

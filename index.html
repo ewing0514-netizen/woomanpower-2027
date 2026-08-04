@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-04-r83 -->
+<!-- build: 2026-08-04-r84 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -39,7 +39,7 @@ h2{font-family:'Noto Serif TC',serif;font-size:clamp(26px,6vw,36px);font-weight:
   50%{text-shadow:0 0 30px rgba(255,214,150,.85),0 0 70px rgba(217,181,102,.55),0 2px 12px rgba(0,0,0,.55);}
 }
 /* HERO — 電影感主視覺 */
-.hero-kv{position:relative;min-height:88vh;background-size:cover;background-position:center 42%;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-kv{position:relative;min-height:88svh;min-height:88vh;background-size:cover;background-position:center 42%;display:flex;flex-direction:column;justify-content:flex-end;}
 .hero-kv::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#1A1216 0%,rgba(26,18,22,.4) 10%,rgba(26,18,22,0) 24%,rgba(26,18,22,0) 50%,rgba(26,18,22,.6) 72%,#1A1216 88%,#1A1216 100%);}
 .hero-info{position:relative;}
 .hero-info::before{content:none;}
@@ -167,7 +167,7 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
 /* 桌機：左文右景 */
 @media (min-width:769px){
   .whyblk{transform:translateY(-16%);}
-  .whybody{margin-top:8vh;}
+  .whybody{margin-top:8svh;margin-top:8vh;}
   .jscene svg{width:min(58vw,880px);}
   .jcopy{left:12vw;right:auto;bottom:auto;top:13vh;transform:none;width:min(400px,26vw);text-align:left;}
   .jcopy .no{letter-spacing:.4em;}
@@ -206,7 +206,7 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
   .whyblk{padding:48px 22px calc(48px + 7vh)!important;}
   .authblk{padding:48px 22px!important;}
   /* 年度成長地圖：手機顯示完整底圖（不裁切），文案疊在圖上置中 */
-  .mapwrap{margin-top:-4vh!important;}
+  .mapwrap{margin-top:-4svh!important;margin-top:-4vh!important;}
   .maphero{aspect-ratio:auto!important;min-height:0!important;max-height:none!important;}
   .maphero img{position:relative!important;display:block!important;width:100%!important;height:auto!important;object-fit:contain!important;}
   .mapcopy{max-width:100%!important;margin-left:0!important;text-align:center!important;}

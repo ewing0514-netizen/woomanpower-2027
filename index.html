@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-04-r81 -->
+<!-- build: 2026-08-04-r82 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -917,6 +917,93 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 });
+</script>
+<div id="__preload" style="position:fixed;inset:0;z-index:99999;background:#15110D;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;transition:opacity .5s ease;">
+  <div style="font-family:'Noto Serif TC','Songti TC',serif;color:#D9B566;font-size:clamp(28px,6vw,42px);font-weight:900;letter-spacing:.08em;line-height:1.3;text-align:center;margin-bottom:36px;text-shadow:0 0 20px rgba(217,181,102,.35);">姐即將帶妳起飛</div>
+  <div style="width:min(80%,320px);height:2px;background:rgba(217,181,102,.15);border-radius:2px;overflow:hidden;">
+    <div id="__preload_bar" style="width:0%;height:100%;background:linear-gradient(90deg,#D9B566,#E1A096);transition:width .3s ease;box-shadow:0 0 8px rgba(217,181,102,.6);"></div>
+  </div>
+  <div id="__preload_pct" style="margin-top:14px;color:rgba(217,181,102,.55);font-size:12px;letter-spacing:.2em;">0%</div>
+</div>
+<script>
+(function(){
+  var loader=document.getElementById('__preload'),
+      bar=document.getElementById('__preload_bar'),
+      pct=document.getElementById('__preload_pct');
+  if(!loader)return;
+  
+  // 收集所有需要預載的關鍵圖片 URL
+  var urls=[];
+  // Hero KV base64（已內嵌，跳過）
+  // 開場動畫的第一張圖（scenes[0]）
+  var scriptContent=document.documentElement.innerHTML;
+  var sceneMatch=scriptContent.match(/IMGS\s*=\s*\[\s*"([^"]+)"/);
+  if(sceneMatch)urls.push(sceneMatch[1]);
+  
+  // 講師卡首屏（1月的 3 張講師照片）
+  var firstImgs=document.querySelectorAll('.wmap .lcard img');
+  for(var i=0;i<Math.min(3,firstImgs.length);i++){
+    var src=firstImgs[i].getAttribute('src');
+    if(src&&urls.indexOf(src)<0)urls.push(src);
+  }
+  // 1 月主題卡
+  var firstMcard=document.querySelector('.wmap .mcard img');
+  if(firstMcard){
+    var src2=firstMcard.getAttribute('src');
+    if(src2&&urls.indexOf(src2)<0)urls.push(src2);
+  }
+  
+  var total=urls.length||1, done=0;
+  var startTime=Date.now();
+  var MAX_WAIT=2000; // 最多等 2 秒就強制進入
+  
+  function update(){
+    var progress=Math.min(1, done/total);
+    var elapsed=Date.now()-startTime;
+    var timeProgress=Math.min(1, elapsed/MAX_WAIT);
+    // 顯示的進度取「實際進度」和「時間進度」的最大值，讓進度條看起來一直在動
+    var display=Math.max(progress*0.7, timeProgress);
+    var percent=Math.round(display*100);
+    bar.style.width=percent+'%';
+    pct.textContent=percent+'%';
+  }
+  
+  function finish(){
+    if(loader.__finished)return;
+    loader.__finished=true;
+    bar.style.width='100%';
+    pct.textContent='100%';
+    setTimeout(function(){
+      loader.style.opacity='0';
+      setTimeout(function(){
+        loader.style.display='none';
+      },500);
+    },200);
+  }
+  
+  // 開始預載
+  urls.forEach(function(url){
+    var im=new Image();
+    im.onload=im.onerror=function(){
+      done++;
+      update();
+    };
+    im.src=url;
+  });
+  
+  // 每 60ms 更新進度條（讓時間進度平滑推動）
+  var ticker=setInterval(function(){
+    update();
+    var elapsed=Date.now()-startTime;
+    if(elapsed>=MAX_WAIT||done>=total){
+      clearInterval(ticker);
+      finish();
+    }
+  },60);
+  
+  // 保險：3.5 秒後絕對進入
+  setTimeout(finish, 3500);
+})();
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-06-r97 -->
+<!-- build: 2026-08-10-r106 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -445,7 +445,8 @@ body .ctopic{margin:0 0 4px 0!important;}
   .lstrip .lcard,
   .lstrip .lcard.june,
   .lstrip .lcard.dec{flex:0 0 68vw!important;max-width:68vw!important;width:68vw!important;
-                     height:68vw!important;aspect-ratio:auto!important;scroll-snap-align:center;}
+                     height:calc(68vw * 4 / 3)!important;max-height:520px!important;
+                     aspect-ratio:auto!important;scroll-snap-align:center;}
   /* 正方形卡：字級放大回易讀 */
   .lstrip .lcard .lname{font-size:21px!important;}
   .lstrip .lcard .ltopic{font-size:14px!important;}
@@ -455,6 +456,12 @@ body .ctopic{margin:0 0 4px 0!important;}
   .lstrip .lcard .cs-shine{font-size:19px!important;}
   body .lstrip [style*="bottom:0"][style*="border-left:3px solid"]{height:132px!important;padding:12px 14px!important;}
   .lstrip .lcard.flip .lbtn{width:30px!important;height:30px!important;line-height:27px!important;font-size:20px!important;}
+}
+
+/* 講師卡統一 3:4 比例（桌機隨欄寬自動計算） */
+@media (min-width:769px){
+  .lcard{height:auto!important;aspect-ratio:3/4!important;}
+  .mcard{height:auto!important;aspect-ratio:3/4!important;}
 }
 </style>
 </head>
@@ -586,6 +593,7 @@ function render(){
     const rs=restStart(i);
     if(p>=rs&&p<rs+REST){io[i]=1;copyIdx=i;}
   }
+
   for(let i=0;i<5;i++){
     const ls=legStart(i);
     if(p>=ls&&p<ls+LEG){
@@ -610,15 +618,6 @@ function render(){
   setCopy(copyIdx);
   for(let i=0;i<dots.length;i++){const on=p>restStart(i)+REST*0.3;
     if(on!==lastDot[i]){lastDot[i]=on;dots[i].classList.toggle('on',on);}}
-
-  // 捲出旅程 → 進入銷售頁：光線變亮再散去
-  if(!wiping){
-    const rb=journey.getBoundingClientRect().bottom;
-    const d=innerHeight-rb;
-    let g=0;
-    if(d>0){const u=d/innerHeight;g=u<0.3?(u/0.3):clamp(1-((u-0.3)/0.5),0,1);}
-    /* 光層已停用 */
-  }
 }
 
 // rAF 驅動 seek，避免每次 scroll 都硬設 currentTime
@@ -1014,25 +1013,31 @@ document.addEventListener('DOMContentLoaded', function(){
 })();
 </script>
 <script>
-/* 一次滑動＝前進／後退一個階段（僅在開場旅程區內生效） */
+/* 一次滑動＝完整播完一段轉場（影片由 0 秒跑到結束） */
 (function(){
   var journey=document.getElementById('journey');
   if(!journey)return;
   var INTRO=0.5,REST=0.5,LEG=1.0,FINALE=0.8;
   var TOTAL=INTRO+REST*6+LEG*5+FINALE;
   function restStart(i){return INTRO+i*(REST+LEG);}
-  /* 第 i 個階段的「停留中心點」對應的頁面捲動位置 */
-  function stageTop(i){
-    var range=journey.offsetHeight-innerHeight;
-    if(range<=0)return journey.offsetTop;
-    var t=(restStart(i)+REST*0.5)/TOTAL;
-    return journey.offsetTop+t*range;
+  function range(){return journey.offsetHeight-innerHeight;}
+  /* 目標位置：-1=開場、0~5=六階段、6=finale、7=離開旅程 */
+  function topFor(i){
+    var r=range(); if(r<=0)return journey.offsetTop;
+    if(i<0)return journey.offsetTop;
+    if(i<=5)return journey.offsetTop+((restStart(i)+REST*0.5)/TOTAL)*r;
+    if(i===6)return journey.offsetTop+((TOTAL-FINALE*0.25)/TOTAL)*r;
+    return journey.offsetTop+journey.offsetHeight;   /* 完全捲出旅程 → 銷售頁 */
+  }
+  function progress(){
+    var r=range(); if(r<=0)return 0;
+    var y=Math.min(Math.max(scrollY-journey.offsetTop,0),r);
+    return (y/r)*TOTAL;
   }
   function currentStage(){
-    var range=journey.offsetHeight-innerHeight;
-    if(range<=0)return 0;
-    var y=Math.min(Math.max(scrollY-journey.offsetTop,0),range);
-    var p=(y/range)*TOTAL;
+    var p=progress();
+    if(p<INTRO*0.92)return -1;              /* 還在開場 */
+    if(p>=TOTAL-FINALE)return 6;            /* 已在 finale（探索課程） */
     var best=0,bd=1e9;
     for(var i=0;i<6;i++){
       var d=Math.abs(p-(restStart(i)+REST*0.5));
@@ -1045,13 +1050,25 @@ document.addEventListener('DOMContentLoaded', function(){
     return r.top<=2 && r.bottom>innerHeight*0.6;
   }
   var animating=false;
-  function goto(i){
-    i=Math.max(0,Math.min(5,i));
+  /* 自訂捲動動畫：時間拉長，讓轉場影片能從 0 秒完整跑到結束 */
+  function animateTo(top,dur){
+    var start=scrollY, delta=top-start, t0=performance.now();
     animating=true;
-    window.scrollTo({top:stageTop(i),behavior:'smooth'});
-    setTimeout(function(){animating=false;},650);
+    (function step(now){
+      var k=Math.min(1,(now-t0)/dur);
+      var e=k<0.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;   /* easeInOutCubic */
+      window.scrollTo(0,start+delta*e);
+      if(k<1)requestAnimationFrame(step);
+      else setTimeout(function(){animating=false;},120);
+    })(t0);
   }
-  /* --- 觸控：一次滑動前進一階 --- */
+  function goto(i,from){
+    i=Math.max(-1,Math.min(7,i));
+    /* 跨一段轉場影片要 1200ms 讓影片跑完；其餘較短 */
+    var crossLeg=(from>=0&&from<=5&&i>=0&&i<=5&&Math.abs(i-from)===1);
+    animateTo(topFor(i), crossLeg?1200:750);
+  }
+  /* --- 觸控 --- */
   var sy=0,st=0,tracking=false;
   addEventListener('touchstart',function(e){
     if(!inJourney()||animating){tracking=false;return;}
@@ -1060,19 +1077,18 @@ document.addEventListener('DOMContentLoaded', function(){
   addEventListener('touchend',function(e){
     if(!tracking||animating||!inJourney())return;
     tracking=false;
-    var dy=sy-(e.changedTouches[0].clientY);
-    var dt=Date.now()-st;
-    if(Math.abs(dy)<28||dt>800)return;      /* 太小或太慢＝當作一般捲動 */
-    goto(currentStage()+(dy>0?1:-1));
+    var dy=sy-e.changedTouches[0].clientY, dt=Date.now()-st;
+    if(Math.abs(dy)<22||dt>900)return;
+    var c=currentStage();goto(c+(dy>0?1:-1),c);
   },{passive:true});
-  /* --- 桌機滾輪：一次滾動前進一階 --- */
-  var wheelLock=false;
+  /* --- 桌機滾輪 --- */
+  var lock=false;
   addEventListener('wheel',function(e){
-    if(!inJourney()||animating||wheelLock)return;
+    if(!inJourney()||animating||lock)return;
     if(Math.abs(e.deltaY)<12)return;
-    wheelLock=true;
-    goto(currentStage()+(e.deltaY>0?1:-1));
-    setTimeout(function(){wheelLock=false;},700);
+    lock=true;
+    var c=currentStage();goto(c+(e.deltaY>0?1:-1),c);
+    setTimeout(function(){lock=false;},900);
   },{passive:true});
 })();
 </script>

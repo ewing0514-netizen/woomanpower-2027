@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-10-r106 -->
+<!-- build: 2026-08-10-r107 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -1068,28 +1068,42 @@ document.addEventListener('DOMContentLoaded', function(){
     var crossLeg=(from>=0&&from<=5&&i>=0&&i<=5&&Math.abs(i-from)===1);
     animateTo(topFor(i), crossLeg?1200:750);
   }
-  /* --- 觸控 --- */
-  var sy=0,st=0,tracking=false;
+  /* --- 觸控：在旅程內攔截原生捲動，避免 iOS 慣性與程式互相拉扯 --- */
+  var sy=0,st=0,tracking=false,active=false;
+  function guard(){                     /* 只有在旅程內、且系統正常時才接管 */
+    try{ return inJourney(); }catch(e){ return false; }
+  }
   addEventListener('touchstart',function(e){
-    if(!inJourney()||animating){tracking=false;return;}
+    active=guard();
+    if(!active||animating){tracking=false;return;}
     sy=e.touches[0].clientY;st=Date.now();tracking=true;
   },{passive:true});
+  addEventListener('touchmove',function(e){
+    if(!active||e.touches.length>1)return;
+    if(!guard()){active=false;return;}
+    e.preventDefault();               /* 關鍵：停掉原生捲動與慣性 */
+  },{passive:false});
   addEventListener('touchend',function(e){
-    if(!tracking||animating||!inJourney())return;
+    if(!tracking){active=false;return;}
     tracking=false;
+    if(animating||!guard()){active=false;return;}
     var dy=sy-e.changedTouches[0].clientY, dt=Date.now()-st;
-    if(Math.abs(dy)<22||dt>900)return;
+    active=false;
+    if(Math.abs(dy)<18)return;        /* 位移太小：當作誤觸，停在原地 */
     var c=currentStage();goto(c+(dy>0?1:-1),c);
   },{passive:true});
-  /* --- 桌機滾輪 --- */
+  addEventListener('touchcancel',function(){tracking=false;active=false;},{passive:true});
+  /* --- 桌機滾輪：同樣接管，避免與原生捲動疊加 --- */
   var lock=false;
   addEventListener('wheel',function(e){
-    if(!inJourney()||animating||lock)return;
+    if(!guard())return;
+    e.preventDefault();
+    if(animating||lock)return;
     if(Math.abs(e.deltaY)<12)return;
     lock=true;
     var c=currentStage();goto(c+(e.deltaY>0?1:-1),c);
-    setTimeout(function(){lock=false;},900);
-  },{passive:true});
+    setTimeout(function(){lock=false;},820);
+  },{passive:false});
 })();
 </script>
 </body>

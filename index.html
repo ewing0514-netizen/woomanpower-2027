@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-11-r109 -->
+<!-- build: 2026-08-11-r110 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -475,6 +475,13 @@ body .ctopic{margin:0 0 4px 0!important;}
 .u7{position:relative;border-radius:22px;overflow:hidden;margin-bottom:26px;padding:26px 22px 28px;background-color:rgba(38,27,33,.42);border:1px solid rgba(217,181,102,.15);}
 .u8{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(21,17,13,.35) 0%,rgba(21,17,13,0) 22%,rgba(21,17,13,0) 46%,rgba(21,17,13,.6) 66%,rgba(21,17,13,.96) 100%);}
 .u9{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:26px 18px;}
+
+@media (max-width:768px){
+  /* 卡片展開時，正面只留照片；文字資訊都在右側面板，避免窄欄擠壓跑版 */
+  .lcard.flip.on .lfront [style*="bottom:0"][style*="border-left:3px solid"]{display:none!important;}
+  .lcard.flip.on .lfront .ltitle,
+  .lcard.flip.on .lfront .ldate{opacity:0!important;}
+}
 </style>
 </head>
 <body>
@@ -584,7 +591,7 @@ const lastIo=new Array(6).fill(-1),lastVo=new Array(5).fill(-1),lastDot=new Arra
 let lastLv=-1, jVisible=true;
 // 捲動只更新「目標值」，實際進度用緩動追上去 → 手指放開後會自然減速停下
 let targetP=0, curP=0, settle=true;
-const EASE = (innerWidth<768 ? 0.18 : 0.15);
+const EASE = (innerWidth<768 ? 0.34 : 0.22);
 function readTarget(){
   const range=journey.offsetHeight-innerHeight;
   if(range<=0)return 0;
@@ -1078,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', function(){
     animating=true;
     (function step(now){
       var k=Math.min(1,(now-t0)/dur);
-      var e=k<0.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;   /* easeInOutCubic */
+      var e=1-Math.pow(1-k,3);                      /* easeOutCubic：立即起步 */
       window.scrollTo(0,start+delta*e);
       if(k<1)requestAnimationFrame(step);
       else setTimeout(function(){animating=false;},120);
@@ -1088,7 +1095,7 @@ document.addEventListener('DOMContentLoaded', function(){
     i=Math.max(-1,Math.min(7,i));
     /* 跨一段轉場影片要 1200ms 讓影片跑完；其餘較短 */
     var crossLeg=(from>=0&&from<=5&&i>=0&&i<=5&&Math.abs(i-from)===1);
-    animateTo(topFor(i), crossLeg?1200:750);
+    animateTo(topFor(i), crossLeg?950:520);
   }
   /* --- 觸控：在旅程內攔截原生捲動，避免 iOS 慣性與程式互相拉扯 --- */
   var sy=0,st=0,tracking=false,active=false;
@@ -1124,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(Math.abs(e.deltaY)<12)return;
     lock=true;
     var c=currentStage();goto(c+(e.deltaY>0?1:-1),c);
-    setTimeout(function(){lock=false;},820);
+    setTimeout(function(){lock=false;},680);
   },{passive:false});
 })();
 </script>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-09-r125 -->
+<!-- build: 2026-09-10-r126 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -39,7 +39,7 @@ h2{font-family:'Noto Serif TC',serif;font-size:clamp(26px,6vw,36px);font-weight:
   50%{text-shadow:0 0 30px rgba(255,214,150,.85),0 0 70px rgba(217,181,102,.55),0 2px 12px rgba(0,0,0,.55);}
 }
 /* HERO — 電影感主視覺 */
-.hero-kv{position:relative;min-height:88svh;min-height:88vh;background-size:cover;background-position:center 42%;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-kv{position:relative;min-height:88vh;min-height:88svh;background-size:cover;background-position:center 42%;display:flex;flex-direction:column;justify-content:flex-end;}
 .hero-kv::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#1A1216 0%,rgba(26,18,22,.4) 10%,rgba(26,18,22,0) 24%,rgba(26,18,22,0) 50%,rgba(26,18,22,.6) 72%,#1A1216 88%,#1A1216 100%);}
 .hero-info{position:relative;}
 .hero-info::before{content:none;}
@@ -137,11 +137,11 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
 
 /* ===== 成長旅程 scroll-world 開場 ===== */
 .journey{height:2800vh;position:relative;}
-@media (max-width:768px){.journey{height:2300svh;height:2300vh;}}
+@media (max-width:768px){.journey{height:2300vh;height:2300svh;}}
 .jstage{position:sticky;top:0;height:100vh;overflow:hidden;background:radial-gradient(92% 58% at 50% 88%, rgba(255,172,122,.34) 0%, rgba(255,150,110,.12) 38%, rgba(21,17,13,0) 62%),radial-gradient(120% 100% at 50% 30%, #2b2126 0%, #191216 55%, #15110D 100%);}
 .jscene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;will-change:transform,opacity;pointer-events:none;}
 .jscene svg{width:min(88vw,1000px);height:auto;filter:drop-shadow(0 0 26px rgba(255,166,120,.45)) drop-shadow(0 0 70px rgba(255,150,110,.2));}
-.jcopy{position:absolute;left:50%;transform:translateX(-50%);bottom:max(17vh,88px);width:min(620px,90vw);text-align:center;opacity:0;transition:opacity .18s linear;pointer-events:none;z-index:3;}
+.jcopy{position:absolute;left:50%;transform:translateX(-50%);bottom:max(17vh,88px);bottom:max(17svh,88px);width:min(620px,90vw);text-align:center;opacity:0;transition:opacity .18s linear;pointer-events:none;z-index:3;}
 .jcopy .no{color:var(--gold);letter-spacing:.5em;font-size:13px;margin-bottom:10px;}
 .jcopy h2{font-family:'Noto Serif TC',serif;font-size:clamp(32px,6.5vw,48px);font-weight:900;letter-spacing:.3em;color:#fdf4e7;text-shadow:0 0 26px rgba(255,196,160,.6);margin-bottom:12px;padding-left:.3em;}
 .jcopy p{font-size:clamp(14px,3.6vw,16px);line-height:1.9;color:rgba(242,234,221,.85);text-shadow:0 2px 16px rgba(0,0,0,.75),0 1px 4px rgba(0,0,0,.6);padding:0;}
@@ -167,7 +167,7 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
 /* 桌機：左文右景 */
 @media (min-width:769px){
   .whyblk{transform:translateY(-16%);}
-  .whybody{margin-top:8svh;margin-top:8vh;}
+  .whybody{margin-top:8vh;margin-top:8svh;}
   .jscene svg{width:min(58vw,880px);}
   .jcopy{left:12vw;right:auto;bottom:auto;top:13vh;transform:none;width:min(400px,26vw);text-align:left;}
   .jcopy .no{letter-spacing:.4em;}
@@ -183,7 +183,7 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
 @media (max-width:768px){
   .jmob{display:inline;}
   .jdesk{display:none;}
-  .jscene{align-items:flex-end;padding-bottom:12vh;}
+  .jscene{align-items:flex-end;padding-bottom:12vh;padding-bottom:12svh;}
   .jscene svg{width:82vw;}
   .jgap{display:block;height:.55em;}
   .jcopy{bottom:auto;top:calc(max(13vh,96px) + env(safe-area-inset-top,0px));width:min(620px,86vw);}
@@ -203,10 +203,10 @@ footer{padding:40px 0 60px;text-align:center;font-size:12px;color:rgba(242,234,2
   /* HERO 頂部標語：手機字距縮短 5% */
   .hero-top .kicker{letter-spacing:.47em;}
   /* 為什麼是年度計畫：左右留白縮小、下方多留 7% 底色 */
-  .whyblk{padding:48px 22px calc(48px + 7vh)!important;}
+  .whyblk{padding:48px 22px calc(48px + 7vh)!important;padding:48px 22px calc(48px + 7svh)!important;}
   .authblk{padding:48px 22px!important;}
   /* 年度成長地圖：手機顯示完整底圖（不裁切），文案疊在圖上置中 */
-  .mapwrap{margin-top:-4svh!important;margin-top:-4vh!important;}
+  .mapwrap{margin-top:-4vh!important;margin-top:-4svh!important;}
   .maphero{aspect-ratio:auto!important;min-height:0!important;max-height:none!important;}
   .maphero img{position:relative!important;display:block!important;width:100%!important;height:auto!important;object-fit:contain!important;}
   .mapcopy{max-width:100%!important;margin-left:0!important;text-align:center!important;}

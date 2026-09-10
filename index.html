@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-10-r127 -->
+<!-- build: 2026-09-10-r128 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -1164,25 +1164,24 @@ document.addEventListener('DOMContentLoaded', function(){
   /* --- 桌機滾輪：同樣接管，避免與原生捲動疊加 --- */
   /* 滾輪：一次實體滾動會連發數十個事件，且觸控板放開後仍有 1~2 秒慣性。
      因此採用「固定冷卻時間」——不被後續事件延長，避免慣性把鎖定無限延後。 */
-  /* 滾輪：一次手勢會連發數十個事件，放開後還有 1 秒以上慣性，且 delta 會上下波動。
-     機制＝「靜止 250ms 解鎖」＋「1300ms 硬上限」：
-       ‧ 靜止期確保整段手勢（含慣性）只觸發一次
-       ‧ 硬上限在觸發當下設定、不被任何事件延長，保證絕不鎖死 */
-  var wBusy=false, wQuiet=0, wHard=0;
+  /* 滾輪／觸控板：以「事件間隔」區分兩種輸入裝置——
+       ‧ 滑鼠滾輪：每一格是獨立事件，彼此間隔通常 >120ms
+       ‧ 觸控板：一次手勢連發數十個事件，間隔僅約 16ms（含放開後的慣性）
+     只在「某一串事件的第一個」觸發，滑鼠每格都算數、觸控板一次手勢算一次。
+     並將 deltaMode 正規化為像素，避免 Firefox（以行為單位）判斷失準。 */
+  var wLast=0, wNext=0;
   addEventListener('wheel',function(e){
     if(!guard())return;
     e.preventDefault();
-    var d=Math.abs(e.deltaY), now=Date.now();
-    if(wBusy){
-      if(now>=wHard){wBusy=false;}            /* 硬上限到期：強制解鎖 */
-      else{
-        if(d>=4)wQuiet=now+250;               /* 手勢仍在進行：延後靜止解鎖 */
-        if(now>=wQuiet)wBusy=false;
-        if(wBusy)return;
-      }
-    }
+    var d=Math.abs(e.deltaY);
+    if(e.deltaMode===1)d*=16;              /* 行 → 像素 */
+    else if(e.deltaMode===2)d*=innerHeight; /* 頁 → 像素 */
+    var now=Date.now(), gap=now-wLast;
+    wLast=now;
     if(d<14)return;
-    wBusy=true; wQuiet=now+250; wHard=now+1300;
+    if(gap<=120)return;                    /* 同一串連續事件（觸控板慣性）→ 忽略 */
+    if(now<wNext)return;                   /* 冷卻，避免過快連發 */
+    wNext=now+280;
     var base=(pending!==null?pending:currentStage());
     goto(base+(e.deltaY>0?1:-1),base);
   },{passive:false});

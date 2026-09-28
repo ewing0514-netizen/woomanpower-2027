@@ -191,6 +191,14 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(255,255,255,.1
 .sletter p.op{font-size:17.5px;font-weight:600;}
 .sletter .sfrom{font-size:14.5px;}}
 @media (max-width:768px){.ff-wait .xh-kicker,.ff-wait .xh-h1{opacity:1!important;}.xh .xh-kicker,.xh .xh-h1{animation:none!important;}}
+.xsoc{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:100;display:flex;flex-direction:column;gap:10px;}
+.xsoc-b{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#F6E7C8;text-decoration:none;
+background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 50%,rgba(255,255,255,.08));background-color:rgba(38,26,32,.55);
+-webkit-backdrop-filter:blur(12px) saturate(160%);backdrop-filter:blur(12px) saturate(160%);border:1px solid rgba(240,210,150,.45);
+box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 18px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
+.xsoc-b svg{width:22px;height:22px;display:block;}
+.xsoc-b:hover,.xsoc-b:focus-visible{transform:translateY(-2px);border-color:#F0D296;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 18px rgba(217,181,102,.45),0 8px 20px rgba(0,0,0,.4);outline:none;}
+@media (max-width:768px){.xsoc{right:12px;bottom:calc(82px + env(safe-area-inset-bottom,0px));gap:9px;}.xsoc-b{width:42px;height:42px;}.xsoc-b svg{width:20px;height:20px;}}
 /* stages */
 .xst{background:#15110D;padding:80px 0 40px;}
 .xst-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:start;}
@@ -519,6 +527,11 @@ targetP=readTarget();curP=targetP;render();
   </div>
 </section>
 <footer>女力學院 Woomanpower &copy; 2026</footer>
+<nav class="xsoc" aria-label="女力學院社群">
+  <a class="xsoc-b" href="https://www.facebook.com/woomanpowerofficial/?locale=zh_TW" target="_blank" rel="noopener" aria-label="女力學院 Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.6 21v-7.7h2.6l.4-3h-3V8.4c0-.9.3-1.5 1.5-1.5h1.6V4.2c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.9v3h2.6V21h3.1z"/></svg></a>
+  <a class="xsoc-b" href="https://www.instagram.com/woomanpower_official/" target="_blank" rel="noopener" aria-label="女力學院 Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="4.8" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.9" r="1.15" fill="currentColor"/></svg></a>
+  <a class="xsoc-b" href="https://lin.ee/4BLO6Gl" target="_blank" rel="noopener" aria-label="加入女力學院 LINE 官方帳號"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.2c-5.2 0-9.4 3.4-9.4 7.6 0 3.8 3.3 6.9 7.8 7.5.3.1.7.2.8.5.1.3.1.6 0 .9l-.1.8c0 .2-.2.9.8.5s5.4-3.2 7.4-5.4c1.4-1.5 2-3 2-4.8 0-4.2-4.2-7.6-9.3-7.6z"/><text x="12" y="12.9" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="4.6" font-weight="700" fill="#241a1f">LINE</text></svg></a>
+</nav>
 <div class="float-bar" id="xfloat">
   <div class="t">早鳥 <b>NT$12,900</b></div>
   <a href="https://www.woomanpower.com/shopping/pay?checkoutId=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVja291dFByb2R1Y3RzIjpbeyJwcm9kdWN0SWQiOiJDb3Vyc2VfNjBkZjk5MTEtZTRmOC00YjllLTlmY2UtMGE1NzhiMWQ4MDAwIiwicXVhbnRpdHkiOjEsIm9wdGlvbnMiOnsibGlzdFByaWNlIjoxMjkwMCwic2FsZVByaWNlIjpudWxsfX1dLCJkaXNjb3VudElkIjpudWxsLCJyZWZlcnJhbENvZGUiOm51bGwsImNvdXBvbkNvZGUiOm51bGwsImlhdCI6MTc4NTc1NDkzMywiYXVkIjoid29vbWFucG93ZXIifQ.oKDJLFPdUI6_nY8ltlVg7fJfn8UEOrXRe27HO12JLjM&amp;source=direct" target="_blank" rel="noopener" >立即加入</a>
